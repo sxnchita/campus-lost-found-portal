@@ -242,16 +242,18 @@ function Auth() {
               {loading ? "Logging in..." : `Login as ${selectedRole}`}
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setMode("forgot");
-                setMessage("");
-              }}
-              className="w-full text-sm text-purple-700 hover:underline"
-            >
-              Forgot Password?
-            </button>
+            {selectedRole === "STUDENT" && (
+  <button
+    type="button"
+    onClick={() => {
+      setMode("forgot");
+      setMessage("");
+    }}
+    className="w-full text-sm text-purple-700 hover:underline"
+  >
+    Forgot Password?
+  </button>
+)}
           </form>
         )}
 

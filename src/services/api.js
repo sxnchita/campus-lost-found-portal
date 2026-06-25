@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://lost-found-portal-backend-production-a4cb.up.railway.app",
+baseURL: "https://lost-found-portal-backend-production-1b02.up.railway.app",
 });
 
 API.interceptors.request.use((config) => {

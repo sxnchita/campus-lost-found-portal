@@ -43,81 +43,82 @@ function AdminMatches() {
       <main className="max-w-7xl mx-auto px-6 py-10">
         <div className="bg-white rounded-3xl shadow-xl border border-purple-100 p-8 mb-8">
           <p className="uppercase text-purple-600 text-sm font-semibold tracking-widest">
-            Admin Review
+            Smart Matching Engine
           </p>
 
-          <h1 className="text-5xl font-extrabold text-slate-900 mt-2">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mt-2">
             Item Matches
           </h1>
 
-          <p className="text-slate-600 mt-3">
-            Review AI-generated matches between lost and found items.
+          <p className="text-slate-600 mt-3 max-w-3xl">
+            Review automated lost-and-found matches generated using item name,
+            category, color, location, and description similarity.
           </p>
         </div>
 
         {matches.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow p-8 text-center">
-            No matches found.
+          <div className="bg-white rounded-3xl shadow-md border border-purple-100 p-10 text-center">
+            <div className="text-5xl mb-3">🔍</div>
+            <h2 className="text-2xl font-bold text-slate-800">
+              No matches found yet
+            </h2>
+            <p className="text-slate-500 mt-2">
+              Once lost and found items are reported, smart matches will appear here.
+            </p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
             {matches.map((match) => {
               const id = match.matchId || match.id;
               const status = match.matchStatus || match.status;
+              const score = match.matchScore ?? 0;
+              const level = match.matchLevel || "LOW";
 
               return (
                 <div
                   key={id}
-                  className="bg-white border border-purple-100 rounded-3xl shadow-md p-6"
+                  className="bg-white border border-purple-100 rounded-3xl shadow-md p-6 hover:shadow-xl hover:-translate-y-1 transition-all"
                 >
-                  <h2 className="text-2xl font-bold text-purple-700 mb-4">
-                    Match #{id}
-                  </h2>
+                  <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-2xl font-bold text-purple-700">
+                      Match #{id}
+                    </h2>
 
-                  <p>
-                    <b>Lost Item:</b>{" "}
-                    {match.lostItem?.itemName || "N/A"}
-                  </p>
+                    <StatusBadge status={status} />
+                  </div>
 
-                  <p>
-                    <b>Found Item:</b>{" "}
-                    {match.foundItem?.itemName || "N/A"}
-                  </p>
+                  <ConfidenceMeter score={score} level={level} />
 
-                  <p>
-                    <b>Match Score:</b>{" "}
-                    {match.matchScore ?? "N/A"}
-                  </p>
+                  <div className="grid gap-4 mt-5">
+                    <ItemBox
+                      title="Lost Item"
+                      icon="📦"
+                      item={match.lostItem}
+                      locationKey="lostLocation"
+                      dateKey="lostDate"
+                    />
 
-                  <p>
-                    <b>Match Level:</b>{" "}
-                    {match.matchLevel ?? "N/A"}
-                  </p>
+                    <ItemBox
+                      title="Found Item"
+                      icon="🎁"
+                      item={match.foundItem}
+                      locationKey="foundLocation"
+                      dateKey="foundDate"
+                    />
+                  </div>
 
-                  <p className="mt-2">
-                    <b>Status:</b>{" "}
-                    <span className="text-purple-700 font-semibold">
-                      {status}
-                    </span>
-                  </p>
-
-                  {(status === "PENDING_ADMIN_REVIEW" ||
-                    status === "PENDING") && (
-                    <div className="flex gap-3 mt-5">
+                  {(status === "PENDING_ADMIN_REVIEW" || status === "PENDING") && (
+                    <div className="flex gap-3 mt-6">
                       <button
-                        onClick={() =>
-                          updateMatch(id, "approve")
-                        }
-                        className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl"
+                        onClick={() => updateMatch(id, "approve")}
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl font-semibold transition"
                       >
-                        Approve
+                        Approve Match
                       </button>
 
                       <button
-                        onClick={() =>
-                          updateMatch(id, "reject")
-                        }
-                        className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl"
+                        onClick={() => updateMatch(id, "reject")}
+                        className="flex-1 bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-xl font-semibold transition"
                       >
                         Reject
                       </button>
@@ -129,6 +130,83 @@ function AdminMatches() {
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+function ConfidenceMeter({ score }) {
+  const color =
+    score >= 80 ? "bg-green-500" : score >= 50 ? "bg-yellow-500" : "bg-red-500";
+
+  const label =
+    score >= 80
+      ? "🟢 High Confidence"
+      : score >= 50
+      ? "🟡 Medium Confidence"
+      : "🔴 Low Confidence";
+
+  return (
+    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+      <div className="flex justify-between mb-2">
+        <p className="font-bold text-slate-800">{label}</p>
+        <p className="font-bold text-purple-700">{score}%</p>
+      </div>
+
+      <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+        <div
+          className={`h-3 rounded-full ${color} transition-all duration-1000`}
+          style={{ width: `${score}%` }}
+        />
+      </div>
+
+      <div className="mt-4 text-sm text-slate-600 space-y-1">
+        <p className="font-semibold text-slate-700">Why this match?</p>
+        <p>✅ Similar item details compared</p>
+        <p>✅ Category, color, and location checked</p>
+        <p>✅ Description similarity analyzed</p>
+      </div>
+    </div>
+  );
+}
+
+function StatusBadge({ status }) {
+  return (
+    <span className="px-4 py-2 rounded-full bg-purple-100 text-purple-700 font-semibold text-sm">
+      {status}
+    </span>
+  );
+}
+
+function ItemBox({ title, icon, item, locationKey, dateKey }) {
+  return (
+    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+      <p className="text-sm font-bold text-purple-600 mb-2">
+        {icon} {title}
+      </p>
+
+      <h3 className="text-lg font-bold text-slate-900">
+        {item?.itemName || "N/A"}
+      </h3>
+
+      <p className="text-sm text-slate-600 mt-1">
+        <b>Category:</b> {item?.category || "N/A"}
+      </p>
+
+      <p className="text-sm text-slate-600">
+        <b>Color:</b> {item?.color || "N/A"}
+      </p>
+
+      <p className="text-sm text-slate-600">
+        <b>Location:</b> {item?.[locationKey] || "N/A"}
+      </p>
+
+      <p className="text-sm text-slate-600">
+        <b>Date:</b> {item?.[dateKey] || "N/A"}
+      </p>
+
+      <p className="text-sm text-slate-500 mt-2 line-clamp-2">
+        {item?.description || "No description available."}
+      </p>
     </div>
   );
 }
