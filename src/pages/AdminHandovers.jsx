@@ -32,9 +32,7 @@ function AdminHandovers() {
         API.get("/claims"),
       ]);
 
-      const handoverData = Array.isArray(handoverRes.data)
-        ? handoverRes.data
-        : [];
+      setHandovers(Array.isArray(handoverRes.data) ? handoverRes.data : []);
 
       const approvedClaims = Array.isArray(claimsRes.data)
         ? claimsRes.data.filter(
@@ -42,7 +40,6 @@ function AdminHandovers() {
           )
         : [];
 
-      setHandovers(handoverData);
       setClaims(approvedClaims);
     } catch (err) {
       console.error(err);
@@ -97,16 +94,31 @@ function AdminHandovers() {
     }
   };
 
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formatTime = (time) => {
+    if (!time) return "N/A";
+    const [hours, minutes] = time.split(":");
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    return date.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   const getClaimLabel = (claim) => {
     const id = claim.claimId || claim.id;
-    const itemName =
-      claim.itemName ||
-      claim.lostItemName ||
-      claim.foundItemName ||
-      "Lost Item";
-
+    const itemName = claim.itemName || "Item";
     const claimantName = claim.claimantName || "Student";
-
     return `${itemName} — Claim #${id} — ${claimantName}`;
   };
 
@@ -117,6 +129,8 @@ function AdminHandovers() {
       String(handover.handoverId || "").includes(keyword) ||
       String(handover.claimId || "").includes(keyword) ||
       String(handover.itemName || "").toLowerCase().includes(keyword) ||
+      String(handover.claimantName || "").toLowerCase().includes(keyword) ||
+      String(handover.finderName || "").toLowerCase().includes(keyword) ||
       String(handover.pickupLocation || "").toLowerCase().includes(keyword) ||
       String(handover.handoverStatus || "").toLowerCase().includes(keyword)
     );
@@ -139,7 +153,7 @@ function AdminHandovers() {
           </h1>
 
           <p className="text-slate-600 mt-3">
-            Schedule pickup meetings only for approved claims.
+            Schedule and manage pickup meetings for approved ownership claims.
           </p>
         </div>
 
@@ -211,14 +225,14 @@ function AdminHandovers() {
         <div className="bg-white border border-purple-100 rounded-2xl shadow-md p-5 mb-8">
           <input
             type="text"
-            placeholder="🔍 Search by item, claim ID, location, or status..."
+            placeholder="🔍 Search by item, claimant, finder, claim ID, location, or status..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full border border-purple-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
 
-        {filteredHandovers.length === 0 ? (
+                {filteredHandovers.length === 0 ? (
           <div className="bg-white border border-purple-100 rounded-2xl shadow p-8 text-center text-slate-500">
             No handovers found.
           </div>
@@ -227,39 +241,80 @@ function AdminHandovers() {
             {filteredHandovers.map((handover) => (
               <div
                 key={handover.handoverId}
-                className="bg-white border border-purple-100 rounded-3xl shadow-md p-6"
+                className="bg-white border border-purple-100 rounded-3xl shadow-md hover:shadow-xl hover:shadow-purple-100 transition p-6"
               >
                 <div className="flex justify-between items-start gap-4">
-                  <h2 className="text-2xl font-bold text-purple-700 mb-4">
-                    Handover #{handover.handoverId}
-                  </h2>
+                  <div>
+                    <h2 className="text-3xl font-bold text-slate-900">
+                      {handover.itemName || "Item"} Handover
+                    </h2>
+
+                    <p className="text-slate-500 mt-1">
+                      Approved Ownership Transfer
+                    </p>
+                  </div>
 
                   <Badge status={handover.handoverStatus} />
                 </div>
 
-                <p>
-                  <b>Claim:</b> #{handover.claimId}
-                </p>
-                <p>
-                  <b>Location:</b> {handover.pickupLocation}
-                </p>
-                <p>
-                  <b>Date:</b> {handover.pickupDate}
-                </p>
-                <p>
-                  <b>Time:</b> {handover.pickupTime}
-                </p>
-                <p>
-                  <b>Instructions:</b> {handover.instructions || "N/A"}
-                </p>
+                {/* People */}
+                <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4 my-5 space-y-2 text-slate-700">
+                  <p>
+                    <b>👤 Claimant:</b>{" "}
+                    {handover.claimantName || "N/A"}
+                  </p>
 
-                {handover.handoverStatus !== "COMPLETED" && (
+                  <p>
+                    <b>👤 Finder:</b>{" "}
+                    {handover.finderName || "N/A"}
+                  </p>
+
+                  <p>
+                    <b>🆔 Claim ID:</b>{" "}
+                    #{handover.claimId}
+                  </p>
+                </div>
+
+                {/* Schedule */}
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
+                  <p>
+                    <b>📅 Pickup Date:</b>{" "}
+                    {formatDate(handover.pickupDate)}
+                  </p>
+
+                  <p>
+                    <b>🕒 Pickup Time:</b>{" "}
+                    {formatTime(handover.pickupTime)}
+                  </p>
+
+                  <p>
+                    <b>📍 Pickup Location:</b>{" "}
+                    {handover.pickupLocation}
+                  </p>
+                </div>
+
+                {/* Instructions */}
+                <div className="mt-5">
+                  <p className="font-semibold text-slate-800">
+                    📋 Handover Instructions
+                  </p>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 mt-2 text-slate-700">
+                    {handover.instructions || "No instructions provided."}
+                  </div>
+                </div>
+
+                {handover.handoverStatus !== "COMPLETED" ? (
                   <button
                     onClick={() => markCompleted(handover.handoverId)}
-                    className="mt-5 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl"
+                    className="mt-6 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl font-semibold w-full"
                   >
-                    Mark Completed
+                    ✓ Mark Completed
                   </button>
+                ) : (
+                  <div className="mt-6 bg-green-50 border border-green-200 rounded-xl py-3 text-center text-green-700 font-semibold">
+                    ✅ Handover Completed
+                  </div>
                 )}
               </div>
             ))}
@@ -271,13 +326,16 @@ function AdminHandovers() {
 }
 
 function Badge({ status }) {
-  const color =
-    status === "COMPLETED"
-      ? "bg-green-100 text-green-700"
-      : "bg-yellow-100 text-yellow-700";
+  let color = "bg-yellow-100 text-yellow-700";
+
+  if (status === "COMPLETED") {
+    color = "bg-green-100 text-green-700";
+  }
 
   return (
-    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${color}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-sm font-semibold ${color}`}
+    >
       {status || "SCHEDULED"}
     </span>
   );
