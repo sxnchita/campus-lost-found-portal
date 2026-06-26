@@ -123,12 +123,21 @@ function AdminLostItems() {
 
                 <div className="mt-5 space-y-2 text-slate-700">
                   <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4 mb-4">
+                    <p><b>👤 Reported By:</b> {item.reportedByName || "N/A"}</p>
+
                     <p>
-                      <b>👤 Reported By:</b> {item.reportedByName || "N/A"}
+                      <b>📅 Lost On:</b>{" "}
+                      {item.lostDate
+                        ? new Date(item.lostDate).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : "N/A"}
                     </p>
 
                     <p>
-                      <b>📅 Reported On:</b>{" "}
+                      <b>🕒 Reported On:</b>{" "}
                       {item.createdAt
                         ? new Date(item.createdAt).toLocaleDateString("en-IN", {
                             day: "2-digit",
