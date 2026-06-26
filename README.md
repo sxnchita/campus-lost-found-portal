@@ -80,28 +80,25 @@ npm run dev
 ## 📸 Application Screenshots
 
 ### 🏠 Home Page
-![Home](screenshots/home.png)
+![Home](Screenshots/home.png)
 
 ### 🔐 Login Page
-![Login](screenshots/login.png)
-
-### 👤 Student Dashboard
-![Student Dashboard](screenshots/student-dashboard.png)
+![Login](Screenshots/login.png)
 
 ### 📝 Report Lost Item
-![Report Lost](screenshots/report-lost.png)
+![Report Lost](Screenshots/reportlost.png)
 
 ### 📦 Report Found Item
-![Report Found](screenshots/report-found.png)
+![Report Found](Screenshots/reportfound.png)
 
 ### 👨‍💼 Admin Dashboard
-![Admin Dashboard](screenshots/admin-dashboard.png)
+![Admin Dashboard](Screenshots/admindashboard.png)
 
-### 📋 Lost Items
-![Lost Items](screenshots/lost-items.png)
+### 📋 Admin - Lost Items
+![Admin Lost](Screenshots/adminlost.png)
 
-### 📋 Found Items
-![Found Items](screenshots/found-items.png)
+### 📋 Admin - Found Items
+![Admin Found](Screenshots/adminfound.png)
 
 ## 👩‍💻 Author
 
