@@ -77,9 +77,31 @@ npm install
 npm run dev
 ```
 
-## 📸 Screenshots
+## 📸 Application Screenshots
 
-Screenshots will be added soon.
+### 🏠 Home Page
+![Home](screenshots/home.png)
+
+### 🔐 Login Page
+![Login](screenshots/login.png)
+
+### 👤 Student Dashboard
+![Student Dashboard](screenshots/student-dashboard.png)
+
+### 📝 Report Lost Item
+![Report Lost](screenshots/report-lost.png)
+
+### 📦 Report Found Item
+![Report Found](screenshots/report-found.png)
+
+### 👨‍💼 Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+### 📋 Lost Items
+![Lost Items](screenshots/lost-items.png)
+
+### 📋 Found Items
+![Found Items](screenshots/found-items.png)
 
 ## 👩‍💻 Author
 
