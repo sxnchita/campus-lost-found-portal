@@ -28,13 +28,22 @@ function ReportLost() {
   };
 
   const getLoggedInUserId = () => {
-    const user =
-      JSON.parse(localStorage.getItem("user")) ||
-      JSON.parse(localStorage.getItem("currentUser")) ||
-      JSON.parse(localStorage.getItem("authUser"));
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
 
-    return user?.userId || user?.id || null;
-  };
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed?.userId) {
+        return Number(parsed.userId);
+      }
+    } catch {
+      // ignore non-JSON values
+    }
+  }
+
+  return null;
+};
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
