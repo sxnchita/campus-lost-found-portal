@@ -20,6 +20,7 @@ function ReportLost() {
 
   const [formData, setFormData] = useState(initialForm);
   const [preview, setPreview] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const logout = () => {
     localStorage.clear();
@@ -56,6 +57,10 @@ function ReportLost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (loading) return;
+
+    setLoading(true);
+
     try {
       await API.post("/lost-items", formData);
       toast.success("Lost item reported successfully!");
@@ -64,6 +69,8 @@ function ReportLost() {
     } catch (err) {
       console.error(err.response?.data || err);
       toast.error("Failed to report lost item.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,15 +120,23 @@ function ReportLost() {
               <label className="block text-sm font-medium text-slate-600 mb-2">
                 Upload Item Image
               </label>
-              <input type="file" accept="image/*" onChange={handleImageChange} className="input" />
+              <input type="file" accept="image/*" onChange={handleImageChange} className="input" disabled={loading} />
             </div>
 
             {preview && (
               <img src={preview} alt="Preview" className="w-40 h-40 object-cover rounded-2xl border shadow md:col-span-2" />
             )}
 
-            <button className="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-semibold transition">
-              Submit Lost Report
+            <button
+              type="submit"
+              disabled={loading}
+              className={`md:col-span-2 text-white py-3 rounded-2xl font-semibold transition ${
+                loading
+                  ? "bg-slate-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {loading ? "Submitting..." : "Submit Lost Report"}
             </button>
           </form>
         </div>
