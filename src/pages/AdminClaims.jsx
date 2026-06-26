@@ -34,6 +34,15 @@ function AdminClaims() {
     }
   };
 
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   if (loading) return <Loader />;
 
   return (
@@ -47,7 +56,7 @@ function AdminClaims() {
           </p>
 
           <h1 className="text-5xl font-extrabold text-slate-900 mt-2">
-            Claims
+            Ownership Claims
           </h1>
 
           <p className="text-slate-600 mt-3">
@@ -68,54 +77,69 @@ function AdminClaims() {
               return (
                 <div
                   key={id}
-                  className="bg-white border border-purple-100 rounded-3xl shadow-md p-6"
+                  className="bg-white border border-purple-100 rounded-3xl shadow-md hover:shadow-xl hover:shadow-purple-100 transition p-6"
                 >
-                  <h2 className="text-2xl font-bold text-purple-700 mb-4">
-                    Claim #{id}
-                  </h2>
+                  <div className="flex justify-between items-start gap-4">
+                    <div>
+                      <h2 className="text-3xl font-bold text-slate-900">
+                        {claim.itemName || "Item"} Claim
+                      </h2>
+                      <p className="text-slate-500 mt-1">Ownership Claim</p>
+                    </div>
 
-                  <p>
-                    <b>Match ID:</b>{" "}
-                    {claim.matchId || "N/A"}
+                    <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">
+                      {status || "N/A"}
+                    </span>
+                  </div>
+
+                  <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4 my-5 space-y-2 text-slate-700">
+                    <p><b>👤 Claimed By:</b> {claim.claimantName || "N/A"}</p>
+                    <p><b>🆔 Match ID:</b> {claim.matchId || "N/A"}</p>
+                    <p><b>📅 Submitted On:</b> {formatDate(claim.createdAt)}</p>
+                  </div>
+
+                  <p className="font-semibold text-slate-800">
+                    📝 Ownership Proof
                   </p>
 
-                  <p>
-                    <b>User ID:</b>{" "}
-                    {claim.userId || "N/A"}
-                  </p>
-
-                  <p className="mt-3">
-                    <b>Ownership Proof:</b>
-                  </p>
-
-                  <div className="bg-slate-50 border rounded-xl p-3 mt-2">
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 mt-2 text-slate-700">
                     {claim.ownershipProof || "No proof provided"}
                   </div>
 
-                  <p className="mt-3">
-                    <b>Status:</b>{" "}
-                    <span className="text-purple-700 font-semibold">
-                      {status}
-                    </span>
-                  </p>
+                  {claim.specialMarks && (
+                    <>
+                      <p className="font-semibold text-slate-800 mt-4">
+                        🔎 Special Marks
+                      </p>
+                      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 mt-2 text-slate-700">
+                        {claim.specialMarks}
+                      </div>
+                    </>
+                  )}
 
-                  {(status === "PENDING" ||
-                    status === "PENDING_APPROVAL") && (
+                  {claim.additionalNotes && (
+                    <>
+                      <p className="font-semibold text-slate-800 mt-4">
+                        🗒️ Additional Notes
+                      </p>
+                      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 mt-2 text-slate-700">
+                        {claim.additionalNotes}
+                      </div>
+                    </>
+                  )}
+
+                  {(status === "PENDING" || status === "PENDING_APPROVAL") && (
                     <div className="flex gap-3 mt-5">
                       <button
-                        onClick={() =>
-                          updateClaim(id, "approve")
-                        }
-                        className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl"
+                        onClick={() => updateClaim(id, "approve")}
+                        className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-xl font-semibold"
                       >
                         Approve
                       </button>
 
                       <button
-                        onClick={() =>
-                          updateClaim(id, "reject")
-                        }
-                        className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl"
+                        onClick={() => updateClaim(id, "reject")}
+                        className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-semibold"
                       >
                         Reject
                       </button>
