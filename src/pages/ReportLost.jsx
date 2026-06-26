@@ -27,13 +27,21 @@ function ReportLost() {
     window.location.href = "/auth";
   };
 
+  const getLoggedInUserId = () => {
+    const user =
+      JSON.parse(localStorage.getItem("user")) ||
+      JSON.parse(localStorage.getItem("currentUser")) ||
+      JSON.parse(localStorage.getItem("authUser"));
+
+    return user?.userId || user?.id || null;
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -59,10 +67,17 @@ function ReportLost() {
 
     if (loading) return;
 
+    const reportedById = getLoggedInUserId();
+
+    const payload = {
+      ...formData,
+      reportedById,
+    };
+
     setLoading(true);
 
     try {
-      await API.post("/lost-items", formData);
+      await API.post("/lost-items", payload);
       toast.success("Lost item reported successfully!");
       setFormData(initialForm);
       setPreview("");
@@ -131,9 +146,7 @@ function ReportLost() {
               type="submit"
               disabled={loading}
               className={`md:col-span-2 text-white py-3 rounded-2xl font-semibold transition ${
-                loading
-                  ? "bg-slate-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
+                loading ? "bg-slate-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
               {loading ? "Submitting..." : "Submit Lost Report"}

@@ -124,7 +124,21 @@ function AdminFoundItems() {
                 </div>
 
                 <div className="mt-5 space-y-2 text-slate-700">
-                  <p><b>Location:</b> {item.foundLocation}</p>
+  <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4 mb-4">
+    <p><b>👤 Found By:</b> {item.reportedByName || "N/A"}</p>
+    <p>
+      <b>📅 Reported On:</b>{" "}
+      {item.createdAt
+        ? new Date(item.createdAt).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "N/A"}
+    </p>
+  </div>
+
+  <p><b>Location:</b> {item.foundLocation}</p>
                   <p><b>Color:</b> {item.color || "N/A"}</p>
                   <p><b>Model:</b> {item.model || "N/A"}</p>
                   <p><b>Description:</b> {item.description || "N/A"}</p>

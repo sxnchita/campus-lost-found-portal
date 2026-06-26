@@ -27,6 +27,15 @@ function ReportFound() {
     window.location.href = "/auth";
   };
 
+  const getLoggedInUserId = () => {
+    const user =
+      JSON.parse(localStorage.getItem("user")) ||
+      JSON.parse(localStorage.getItem("currentUser")) ||
+      JSON.parse(localStorage.getItem("authUser"));
+
+    return user?.userId || user?.id || null;
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -58,10 +67,17 @@ function ReportFound() {
 
     if (loading) return;
 
+    const reportedById = getLoggedInUserId();
+
+    const payload = {
+      ...formData,
+      reportedById,
+    };
+
     setLoading(true);
 
     try {
-      await API.post("/found-items", formData);
+      await API.post("/found-items", payload);
       toast.success("Found item reported successfully!");
       setFormData(initialForm);
       setPreview("");
@@ -130,9 +146,7 @@ function ReportFound() {
               type="submit"
               disabled={loading}
               className={`md:col-span-2 text-white py-3 rounded-2xl font-semibold transition ${
-                loading
-                  ? "bg-slate-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
+                loading ? "bg-slate-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
               {loading ? "Submitting..." : "Submit Found Report"}
