@@ -51,8 +51,7 @@ function AdminMatches() {
           </h1>
 
           <p className="text-slate-600 mt-3 max-w-3xl">
-            Review automated lost-and-found matches generated using item name,
-            category, color, location, and description similarity.
+            Review automated lost-and-found matches with participant details.
           </p>
         </div>
 
@@ -63,7 +62,7 @@ function AdminMatches() {
               No matches found yet
             </h2>
             <p className="text-slate-500 mt-2">
-              Once lost and found items are reported, smart matches will appear here.
+              Once lost and found items are reported, matches will appear here.
             </p>
           </div>
         ) : (
@@ -72,7 +71,6 @@ function AdminMatches() {
               const id = match.matchId || match.id;
               const status = match.matchStatus || match.status;
               const score = match.matchScore ?? 0;
-              const level = match.matchLevel || "LOW";
 
               return (
                 <div
@@ -83,27 +81,38 @@ function AdminMatches() {
                     <h2 className="text-2xl font-bold text-purple-700">
                       Match #{id}
                     </h2>
-
                     <StatusBadge status={status} />
                   </div>
 
-                  <ConfidenceMeter score={score} level={level} />
+                  <ConfidenceMeter score={score} />
+
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 mt-5">
+                    <h3 className="text-lg font-bold text-indigo-700 mb-3">
+                      👥 Participants
+                    </h3>
+
+                    <p className="text-slate-700">
+                      <b>🙍 Lost Reported By:</b>{" "}
+                      {match.lostReportedByName || "N/A"}
+                    </p>
+
+                    <p className="text-slate-700">
+                      <b>🙍 Found Reported By:</b>{" "}
+                      {match.foundReportedByName || "N/A"}
+                    </p>
+                  </div>
 
                   <div className="grid gap-4 mt-5">
                     <ItemBox
                       title="Lost Item"
                       icon="📦"
-                      item={match.lostItem}
-                      locationKey="lostLocation"
-                      dateKey="lostDate"
+                      name={match.lostItemName || match.lostItem?.itemName}
                     />
 
                     <ItemBox
                       title="Found Item"
                       icon="🎁"
-                      item={match.foundItem}
-                      locationKey="foundLocation"
-                      dateKey="foundDate"
+                      name={match.foundItemName || match.foundItem?.itemName}
                     />
                   </div>
 
@@ -154,16 +163,9 @@ function ConfidenceMeter({ score }) {
 
       <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
         <div
-          className={`h-3 rounded-full ${color} transition-all duration-1000`}
+          className={`h-3 rounded-full ${color}`}
           style={{ width: `${score}%` }}
         />
-      </div>
-
-      <div className="mt-4 text-sm text-slate-600 space-y-1">
-        <p className="font-semibold text-slate-700">Why this match?</p>
-        <p>✅ Similar item details compared</p>
-        <p>✅ Category, color, and location checked</p>
-        <p>✅ Description similarity analyzed</p>
       </div>
     </div>
   );
@@ -172,12 +174,12 @@ function ConfidenceMeter({ score }) {
 function StatusBadge({ status }) {
   return (
     <span className="px-4 py-2 rounded-full bg-purple-100 text-purple-700 font-semibold text-sm">
-      {status}
+      {status || "N/A"}
     </span>
   );
 }
 
-function ItemBox({ title, icon, item, locationKey, dateKey }) {
+function ItemBox({ title, icon, name }) {
   return (
     <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
       <p className="text-sm font-bold text-purple-600 mb-2">
@@ -185,28 +187,8 @@ function ItemBox({ title, icon, item, locationKey, dateKey }) {
       </p>
 
       <h3 className="text-lg font-bold text-slate-900">
-        {item?.itemName || "N/A"}
+        {name || "N/A"}
       </h3>
-
-      <p className="text-sm text-slate-600 mt-1">
-        <b>Category:</b> {item?.category || "N/A"}
-      </p>
-
-      <p className="text-sm text-slate-600">
-        <b>Color:</b> {item?.color || "N/A"}
-      </p>
-
-      <p className="text-sm text-slate-600">
-        <b>Location:</b> {item?.[locationKey] || "N/A"}
-      </p>
-
-      <p className="text-sm text-slate-600">
-        <b>Date:</b> {item?.[dateKey] || "N/A"}
-      </p>
-
-      <p className="text-sm text-slate-500 mt-2 line-clamp-2">
-        {item?.description || "No description available."}
-      </p>
     </div>
   );
 }
