@@ -20,8 +20,10 @@ import AdminMatches from "./pages/AdminMatches";
 import AdminClaims from "./pages/AdminClaims";
 import AdminHandovers from "./pages/AdminHandovers";
 import AuditLogs from "./pages/AuditLogs";
+
 import StudentMatches from "./pages/StudentMatches";
 import StudentHandovers from "./pages/StudentHandovers";
+import MyFoundItems from "./pages/MyFoundItems";
 
 function ProtectedRoute({ children, role }) {
   const token = localStorage.getItem("token");
@@ -50,13 +52,22 @@ function App() {
         />
 
         <Route
-  path="/student-matches"
-  element={
-    <ProtectedRoute role="STUDENT">
-      <StudentMatches />
-    </ProtectedRoute>
-  }
-/>
+          path="/student-matches"
+          element={
+            <ProtectedRoute role="STUDENT">
+              <StudentMatches />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-found-items"
+          element={
+            <ProtectedRoute role="STUDENT">
+              <MyFoundItems />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/handovers"
