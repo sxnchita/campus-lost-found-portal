@@ -123,7 +123,13 @@ function MyFoundItems() {
                     <Step done={item.matchStatus && item.matchStatus !== "NO_MATCH"} label="Match Found" />
                     <Step done={item.claimStatus === "APPROVED"} label="Owner Verified" />
                     <Step done={item.handoverStatus === "SCHEDULED" || item.handoverStatus === "COMPLETED"} label="Handover Scheduled" />
-                    <Step done={item.handoverStatus === "COMPLETED"} label="Item Returned" />
+                    <Step
+  done={
+    item.handoverStatus === "COMPLETED" ||
+    item.handoverStatus === "RETURNED"
+  }
+  label="Item Returned"
+/>
                   </div>
                 </div>
               </div>
