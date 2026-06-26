@@ -28,22 +28,8 @@ function ReportFound() {
   };
 
   const getLoggedInUserId = () => {
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    const value = localStorage.getItem(key);
-
-    try {
-      const parsed = JSON.parse(value);
-      if (parsed?.userId) {
-        return Number(parsed.userId);
-      }
-    } catch {
-      // ignore non-JSON values
-    }
-  }
-
-  return null;
-};
+    return Number(localStorage.getItem("userId"));
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -76,11 +62,9 @@ function ReportFound() {
 
     if (loading) return;
 
-    const reportedById = getLoggedInUserId();
-
     const payload = {
       ...formData,
-      reportedById,
+      reportedById: getLoggedInUserId(),
     };
 
     setLoading(true);
