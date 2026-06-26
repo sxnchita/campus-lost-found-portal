@@ -21,7 +21,6 @@ function StudentHandovers() {
   const fetchHandovers = async () => {
     try {
       setLoading(true);
-
       const userId = localStorage.getItem("userId");
 
       if (!userId) {
@@ -30,17 +29,33 @@ function StudentHandovers() {
       }
 
       const res = await API.get(`/handovers/student/${userId}`);
-
-      if (Array.isArray(res.data)) {
-        setHandovers(res.data);
-      } else {
-        setHandovers([]);
-      }
+      setHandovers(Array.isArray(res.data) ? res.data : []);
     } catch {
       toast.error("Failed to load handover schedules.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formatTime = (time) => {
+    if (!time) return "N/A";
+    const [hours, minutes] = time.split(":");
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    return date.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const filteredHandovers = handovers.filter((handover) => {
@@ -49,6 +64,7 @@ function StudentHandovers() {
     return (
       String(handover.handoverId || "").includes(keyword) ||
       String(handover.claimId || "").includes(keyword) ||
+      String(handover.itemName || "").toLowerCase().includes(keyword) ||
       String(handover.pickupLocation || "").toLowerCase().includes(keyword) ||
       String(handover.pickupDate || "").toLowerCase().includes(keyword) ||
       String(handover.handoverStatus || "").toLowerCase().includes(keyword)
@@ -79,7 +95,7 @@ function StudentHandovers() {
         <div className="bg-white border border-blue-100 rounded-2xl shadow-md p-5 mb-8">
           <input
             type="text"
-            placeholder="🔍 Search by handover ID, claim ID, location, date, or status..."
+            placeholder="🔍 Search by item, claim ID, location, date, or status..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full border border-blue-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -97,21 +113,43 @@ function StudentHandovers() {
                 key={handover.handoverId}
                 className="bg-white rounded-3xl shadow-md hover:shadow-xl transition p-6 border border-blue-100"
               >
-                <div className="flex justify-between items-start gap-4 mb-4">
-                  <h2 className="text-2xl font-bold text-blue-700">
-                    Handover #{handover.handoverId}
-                  </h2>
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <h2 className="text-3xl font-bold text-slate-900">
+                      {handover.itemName || "Item"} Handover
+                    </h2>
+                    <p className="text-slate-500 mt-1">Pickup Details</p>
+                  </div>
 
                   <Badge status={handover.handoverStatus} />
                 </div>
 
-                <div className="space-y-2 text-slate-700">
-                  <p><b>Claim ID:</b> #{handover.claimId}</p>
-                  <p><b>Pickup Location:</b> {handover.pickupLocation}</p>
-                  <p><b>Date:</b> {handover.pickupDate}</p>
-                  <p><b>Time:</b> {handover.pickupTime}</p>
-                  <p><b>Instructions:</b> {handover.instructions || "N/A"}</p>
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 my-5 space-y-2 text-slate-700">
+                  <p><b>📦 Item:</b> {handover.itemName || "N/A"}</p>
+                  <p><b>🆔 Claim ID:</b> #{handover.claimId}</p>
                 </div>
+
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2 text-slate-700">
+                  <p><b>📅 Pickup Date:</b> {formatDate(handover.pickupDate)}</p>
+                  <p><b>🕒 Pickup Time:</b> {formatTime(handover.pickupTime)}</p>
+                  <p><b>📍 Pickup Location:</b> {handover.pickupLocation || "N/A"}</p>
+                </div>
+
+                <div className="mt-5">
+                  <p className="font-semibold text-slate-800">
+                    📋 Instructions
+                  </p>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 mt-2 text-slate-700">
+                    {handover.instructions || "No instructions provided."}
+                  </div>
+                </div>
+
+                {handover.handoverStatus === "COMPLETED" && (
+                  <div className="mt-6 bg-green-50 border border-green-200 rounded-xl py-3 text-center text-green-700 font-semibold">
+                    ✅ Handover Completed
+                  </div>
+                )}
               </div>
             ))}
           </div>
