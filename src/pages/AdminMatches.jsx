@@ -104,16 +104,26 @@ function AdminMatches() {
 
                   <div className="grid gap-4 mt-5">
                     <ItemBox
-                      title="Lost Item"
-                      icon="📦"
-                      name={match.lostItemName || match.lostItem?.itemName}
-                    />
+  title="Lost Item"
+  icon="📦"
+  name={match.lostItemName}
+  category={match.lostCategory}
+  color={match.lostColor}
+  location={match.lostLocation}
+  date={match.lostDate}
+  description={match.lostDescription}
+/>
 
-                    <ItemBox
-                      title="Found Item"
-                      icon="🎁"
-                      name={match.foundItemName || match.foundItem?.itemName}
-                    />
+<ItemBox
+  title="Found Item"
+  icon="🎁"
+  name={match.foundItemName}
+  category={match.foundCategory}
+  color={match.foundColor}
+  location={match.foundLocation}
+  date={match.foundDate}
+  description={match.foundDescription}
+/>
                   </div>
 
                   {(status === "PENDING_ADMIN_REVIEW" || status === "PENDING") && (
@@ -179,7 +189,7 @@ function StatusBadge({ status }) {
   );
 }
 
-function ItemBox({ title, icon, name }) {
+function ItemBox({ title, icon, name, category, color, location, date, description }) {
   return (
     <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
       <p className="text-sm font-bold text-purple-600 mb-2">
@@ -189,6 +199,26 @@ function ItemBox({ title, icon, name }) {
       <h3 className="text-lg font-bold text-slate-900">
         {name || "N/A"}
       </h3>
+
+      <p className="text-sm text-slate-600 mt-2">
+        <b>Category:</b> {category || "N/A"}
+      </p>
+
+      <p className="text-sm text-slate-600">
+        <b>Color:</b> {color || "N/A"}
+      </p>
+
+      <p className="text-sm text-slate-600">
+        <b>Location:</b> {location || "N/A"}
+      </p>
+
+      <p className="text-sm text-slate-600">
+        <b>Date:</b> {date || "N/A"}
+      </p>
+
+      <p className="text-sm text-slate-500 mt-2">
+        {description || "No description available."}
+      </p>
     </div>
   );
 }
